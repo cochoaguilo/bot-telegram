@@ -118,7 +118,7 @@ async def config_callback(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> Non
 
     dato = query.data
     cfg = {
-        "campos": list(__import__("json").loads(usuario_db.get("campos", "[]")) or cfgmod.DEFAULTS["campos"]),
+        "campos": list(__import__("json").loads((usuario_db.get("campos") or "[]")) or cfgmod.DEFAULTS["campos"]),
         "dividir_lineas": usuario_db.get("dividir_lineas", cfgmod.DEFAULTS["dividir_lineas"]),
         "fila_por_adjunto": usuario_db.get("fila_por_adjunto", cfgmod.DEFAULTS["fila_por_adjunto"]),
     }
@@ -169,7 +169,7 @@ async def estado_cmd(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text("Primero necesitas /start para autorizar.")
         return
 
-    campos_list = __import__("json").loads(usuario_db.get("campos", "[]")) or cfgmod.DEFAULTS["campos"]
+    campos_list = __import__("json").loads((usuario_db.get("campos") or "[]")) or cfgmod.DEFAULTS["campos"]
     opciones = "\n".join(
         f"- {etiqueta}: {'si' if usuario_db.get(c, cfgmod.DEFAULTS.get(c)) else 'no'}"
         for c, etiqueta in OPCIONES
@@ -194,7 +194,7 @@ async def guardar_mensaje(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> Non
 
     # Arma la config
     cfg = {
-        "campos": __import__("json").loads(usuario_db.get("campos", "[]")) or cfgmod.DEFAULTS["campos"],
+        "campos": __import__("json").loads((usuario_db.get("campos") or "[]")) or cfgmod.DEFAULTS["campos"],
         "dividir_lineas": usuario_db.get("dividir_lineas", cfgmod.DEFAULTS["dividir_lineas"]),
         "fila_por_adjunto": usuario_db.get("fila_por_adjunto", cfgmod.DEFAULTS["fila_por_adjunto"]),
     }

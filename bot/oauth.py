@@ -35,6 +35,7 @@ def url_autorizacion(telegram_id: int) -> str:
         },
         scopes=SCOPES,
     )
+    flow.redirect_uri = os.environ["BASE_URL"] + "/oauth/callback"
     # Fuerza que Google devuelva siempre un refresh_token, incluso si el usuario ya autorizó
     flow.code_challenge_method = None  # No PKCE; no es necesario aquí
     auth_url, _ = flow.authorization_url(
@@ -57,6 +58,7 @@ def intercambiar_code(code: str) -> Credentials:
         },
         scopes=SCOPES,
     )
+    flow.redirect_uri = os.environ["BASE_URL"] + "/oauth/callback"
     flow.fetch_token(code=code)
     return flow.credentials
 

@@ -6,7 +6,6 @@ import logging
 import time
 
 from google.auth.transport.requests import Request
-from google.errors import GoogleError
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.oauth2.credentials import Credentials

@@ -6,6 +6,7 @@ import asyncio
 import logging
 import os
 import sys
+from urllib.parse import urlparse
 
 from dotenv import load_dotenv
 from telegram.ext import (
@@ -16,7 +17,7 @@ from telegram.ext import (
     filters,
 )
 
-from . import db, handlers
+from . import db, handlers, server
 
 logging.basicConfig(
     format="%(asctime)s %(levelname)s %(name)s: %(message)s", level=logging.INFO
@@ -64,13 +65,19 @@ def main() -> None:
         MessageHandler(filters.ALL & ~filters.COMMAND, handlers.guardar_mensaje)
     )
 
-    log.info("Bot escuchando (long-polling). Ctrl+C para parar.")
     # Configura Windows event loop si es necesario (igual que antes)
     if sys.platform == "win32":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
 
+    # Arranca el servidor HTTP del callback de OAuth en un hilo aparte
+    base_url = urlparse(os.environ["BASE_URL"])
+    server.configurar(app.bot, loop)
+    server.iniciar_en_hilo(host="0.0.0.0", port=base_url.port or 5000)
+    log.info("Servidor OAuth escuchando en el puerto %s", base_url.port or 5000)
+
+    log.info("Bot escuchando (long-polling). Ctrl+C para parar.")
     # Arranca con polling
     app.run_polling(drop_pending_updates=True)
 
